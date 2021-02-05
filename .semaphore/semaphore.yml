@@ -14,9 +14,9 @@ blocks:
             - sem-version node 12
             - cache restore
             - yarn --frozen-lockfile
-            - yarn test
-            - yarn eslint
-            - yarn stylelint
+            - yarn test:unit
+            # - yarn eslint
+            # - yarn stylelint
 promotions:
   - name: Deployment
     pipeline_file: deployment.yml

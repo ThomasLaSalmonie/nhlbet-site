@@ -28,6 +28,9 @@ export default {
     confirm_password: 'Confirmer mot de passe',
     sex: 'Genre',
   },
+  profil: {
+    update_email: 'Mettre à jour le courriel',
+  },
   teams: {
     official_site: 'Site officiel',
   },
