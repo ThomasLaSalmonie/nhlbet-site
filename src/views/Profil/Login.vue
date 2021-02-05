@@ -1,0 +1,60 @@
+<template>
+  <b-container fluid>
+    <h1>{{ $t('login.sign_in') }}:</h1>
+    {{ $t('global.or') }}
+    <router-link to="/register">{{ $t('login.register') }}</router-link>
+    <b-form @submit="onSubmit">
+      <b-row class="justify-content-md-center">
+        <b-col cols="12" md="auto">
+          <label>{{ $t('login.email') }}*:</label>
+          <b-form-input v-model="form.email" type="email" required/>
+          <label>{{ $t('login.password') }}*:</label>
+          <b-form-input v-model="form.password" type="password" required/>
+          <b-form-checkbox v-model="form.checked" class="mb-2 mr-sm-2 mb-sm-0">
+            {{ $t('login.stay_logged_in') }}
+          </b-form-checkbox>
+        </b-col>
+      </b-row>
+      <br />
+      <b-button type="submit" variant="primary">{{ $t('login.login') }}</b-button>
+    </b-form>
+  </b-container>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex';
+
+export default {
+  data() {
+    return {
+      form: {
+        email: '',
+        password: '',
+        checked: false,
+      },
+      show: true,
+    };
+  },
+  computed: {
+    ...mapGetters({
+      isLoggedIn: 'auth/isLoggedIn',
+    }),
+  },
+  methods: {
+    ...mapActions({
+      login: 'auth/login',
+    }),
+    async onSubmit(event) {
+      event.preventDefault();
+      const { form } = this;
+      try {
+        await this.login(form);
+        this.$reportSuccess({ message: 'dialogs.login_success' });
+      } catch (e) {
+        console.log(e);
+        this.$reportError({ message: 'errors.login_error' });
+      }
+    },
+  },
+};
+</script>

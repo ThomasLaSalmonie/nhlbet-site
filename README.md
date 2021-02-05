@@ -1,4 +1,4 @@
-# gameon-site
+# nhlbet-site
 
 ## Project setup
 ```

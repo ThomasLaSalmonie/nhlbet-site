@@ -1,8 +1,6 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
+import Router from 'vue-router';
 import Home from '../views/Home.vue';
-
-Vue.use(VueRouter);
 
 const routes = [
   {
@@ -18,12 +16,41 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
   },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/Profil/Login.vue'),
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: () => import('../views/Profil/Register.vue'),
+  },
+  {
+    path: '/profil',
+    name: 'Profil',
+    component: () => import('../views/Profil/Profil.vue'),
+  },
+  {
+    path: '/teams',
+    name: 'Teams',
+    component: () => import('../views/Team/Team.vue'),
+  },
+  {
+    path: '/games',
+    name: 'Games',
+    component: () => import('../views/Game/Game.vue'),
+  },
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes,
-});
+export default function createRouter() {
+  Vue.use(Router);
 
-export default router;
+  const router = new Router({
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes,
+  });
+
+  return router;
+}
