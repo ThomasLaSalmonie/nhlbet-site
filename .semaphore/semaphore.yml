@@ -1,0 +1,22 @@
+version: v1.0
+name: Test MyApp
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: CI
+    task:
+      jobs:
+        - name: Test
+          commands:
+            - checkout
+            - sem-version node 12
+            - cache restore
+            - yarn --frozen-lockfile
+            - yarn test
+            - yarn eslint
+            - yarn stylelint
+promotions:
+  - name: Deployment
+    pipeline_file: deployment.yml

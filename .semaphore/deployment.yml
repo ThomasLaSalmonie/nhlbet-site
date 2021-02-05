@@ -1,0 +1,26 @@
+version: v1.0
+name: Deployment
+blocks:
+  - name: Deploy
+    task:
+      secrets:
+        - name: ms-site-secret
+      prologue:
+        commands:
+          - gcloud auth activate-service-account --key-file=.secrets/gcp.json
+          - gcloud auth configure-docker -q
+          - checkout
+      jobs:
+        - name: Deployment
+          commands:
+            - checkout
+            - source ./ci_cd/scripts/env-prod
+            - docker build -t megaswords-site-prod-container .
+            - 'docker tag megaswords-site-prod-container gcr.io/megaswords/megaswords-site:$SEMAPHORE_WORKFLOW_ID'
+            - docker push gcr.io/megaswords/megaswords-site:$SEMAPHORE_WORKFLOW_ID
+            - source ./ci_cd/scripts/setup
+            - source ./ci_cd/scripts/deploy
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
