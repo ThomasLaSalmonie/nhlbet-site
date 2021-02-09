@@ -42,7 +42,7 @@ export default {
         setCookie(AUTH_TOKEN_LOCAL_STORAGE_KEY, token, cookieOptions);
         setAuthorizationHeader(this.$http, token);
 
-        this.$router.push('/');
+        this.$router.push('/profil');
         resolve();
       } catch (error) {
         commit('authLoginError');
@@ -114,9 +114,9 @@ export default {
           const response = await this.$apollo.defaultClient.mutate({
             mutation: gql(mutation),
           });
-          console.log(response.data.verify.token);
-          if (get(response, 'data.verify.token', undefined) !== undefined) {
-            onLoginSuccess(token);
+          const newToken = get(response, 'data.verify.token', undefined);
+          if (newToken !== undefined) {
+            onLoginSuccess(newToken);
           }
         } catch (error) {
           if (error.response !== undefined && error.response.status === 400) {

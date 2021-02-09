@@ -41,6 +41,11 @@ const routes = [
     name: 'Games',
     component: () => import('../views/Game/Game.vue'),
   },
+  {
+    path: '/leaderboard',
+    name: 'Leaderboard',
+    component: () => import('../views/Leaderboard/Leaderboard.vue'),
+  },
 ];
 
 export default function createRouter() {

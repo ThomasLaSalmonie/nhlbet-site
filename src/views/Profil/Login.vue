@@ -51,7 +51,6 @@ export default {
         await this.login(form);
         this.$reportSuccess({ message: 'dialogs.login_success' });
       } catch (e) {
-        console.log(e);
         this.$reportError({ message: 'errors.login_error' });
       }
     },

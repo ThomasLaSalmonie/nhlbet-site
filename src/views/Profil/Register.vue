@@ -67,7 +67,6 @@ export default {
         await this.register(form);
         this.$reportSuccess({ message: 'dialogs.register_success' });
       } catch (e) {
-        console.log(e);
         this.$reportError({ message: 'errors.register_error' });
       }
     },

@@ -1,6 +1,6 @@
 <template>
   <b-container fluid>
-    <b-row class="justify-content-md-center">
+    <b-row class="justify-content-md-center" no-gutters>
       <b-col cols="12" md="auto" class="p-2">
         <div class="datepicker-trigger">
           <input
@@ -27,13 +27,21 @@
       </b-col>
     </b-row>
     <b-container
+      class="justify-content-md-center"
+    >
+      <b-row no-gutters>
+        {{ (currentPage - 1) * 10 + 1}} - {{ currentPage * 10}} out of {{ ngames }} results
+      </b-row>
+    </b-container>
+    <b-container
       v-if="$apolloData.queries.games.loading === false"
       class="justify-content-md-center"
     >
       <b-row
-          v-for="(game, index) in games"
-          :key="index"
-          >
+        v-for="(game, index) in games"
+        :key="index"
+        no-gutters
+      >
         <b-card
           class="mb-2"
           :header-bg-variant="headerColor(game)"
@@ -84,6 +92,7 @@
                   <br />
 
                   <b-card-text v-if="game.user_bet.home_amount > 0 || game.user_bet.away_amount > 0">potential win: {{ game.user_bet.potential_win }} </b-card-text>
+                  <b-card-text>Total bet: {{ game.total_bet }}</b-card-text>
                   <b-button variant="primary" @click="bet(game)">{{ $t('bets.bet') }}</b-button>
                 </div>
               </b-card>
@@ -103,6 +112,15 @@
           </b-row>
         </b-card>
       </b-row>
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="ngames"
+        :per-page="perPage"
+        first-text="First"
+        prev-text="Prev"
+        next-text="Next"
+        last-text="Last"
+      ></b-pagination>
     </b-container>
     <b-container
       v-else
@@ -158,14 +176,17 @@ export default {
       dateFormat: 'D MMM',
       dateOne: '',
       dateTwo: '',
+      perPage: 10,
+      currentPage: 1,
+      rows: 12,
     };
   },
   apollo: {
     games: {
       query() {
         const query = `
-          query games($team: Int, $date: String) {
-            games(team: $team, date: $date) {
+          query games($team: Int, $date: String, $offset: Int) {
+            games(team: $team, date: $date, offset: $offset) {
               id,
               status,
               game_date,
@@ -181,6 +202,7 @@ export default {
                 code
               }
               home_score,
+              total_bet,
               user_bet {
                 id,
                 away_amount,
@@ -194,9 +216,20 @@ export default {
       },
       variables() {
         return {
+          offset: this.currentPage * 10,
           team: this.selected,
           date: this.formatDates(this.dateOne, this.dateTwo, ','),
         };
+      },
+    },
+    ngames: {
+      query() {
+        const query = `
+          query ngames {
+            ngames
+          }
+        `;
+        return gql(query);
       },
     },
     teams: {
@@ -231,8 +264,6 @@ export default {
           ? parseFloat(game.user_bet.away_amount)
           : 0,
       };
-      console.log(typeof data.home_amount);
-
       try {
         const mutation = 'mutation patchBet($id: Int, $patch: BetPatch!) { patchBet(id: $id, patch: $patch) { id, potential_win } }';
         const response = await this.$apollo.mutate({
@@ -246,6 +277,7 @@ export default {
         this.games[index].user_bet.id = response.data.patchBet.id;
         this.games[index].user_bet.potential_win = response.data.patchBet.potential_win;
       } catch (e) {
+        // TODO: display error points
         console.log(e);
       }
     },

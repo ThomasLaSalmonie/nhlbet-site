@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <b-navbar type="dark" variant="dark">
+    <b-navbar type="dark" variant="dark" class="header">
       <b-navbar-nav>
         <b-navbar-brand href="#">
           <b-nav-item><router-link to="/">Home</router-link></b-nav-item>
@@ -9,10 +9,13 @@
       <b-navbar-nav class="ml-auto">
         <b-nav-item to="/teams">Teams</b-nav-item>
         <b-nav-item to="/games">Games</b-nav-item>
+        <b-nav-item to="/leaderboard">Leaderboard</b-nav-item>
         <b-nav-item to="/about">About</b-nav-item>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
-        <b-button v-if="isLoggedIn === true" disabled size="sm" class="my-2 my-sm-0" variant="warning">{{ gamePoints }} points</b-button>
+        <b-button v-if="isLoggedIn === true" disabled size="sm" class="my-2 my-sm-0" variant="warning">
+          {{ gamePoints }} points
+        </b-button>
         <!-- <b-nav-item-dropdown text="Lang" right>
           <b-dropdown-item href="#">EN</b-dropdown-item>
           <b-dropdown-item href="#">FR</b-dropdown-item>
@@ -27,7 +30,19 @@
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-navbar>
-    <router-view/>
+    <router-view class="my-5"/>
+    <b-navbar type="dark" variant="dark" class="footer">
+      <b-navbar-nav class="ml-auto">
+        <b-nav-item class="text-center" disabled variant="light">
+          {{ new Date().getFullYear() }} - My NFL Bet
+        </b-nav-item>
+      </b-navbar-nav>
+      <b-navbar-nav class="ml-auto" small>
+        <b-nav-item class="text-center" href="https://twitter.com/mysportsbet_" target="blank_">
+          <b-icon icon="twitter"/>
+        </b-nav-item>
+      </b-navbar-nav>
+    </b-navbar>
   </div>
 </template>
 
@@ -67,7 +82,6 @@ export default {
     try {
       await this.autoLogin();
     } catch (error) {
-      console.log(error);
       // We expect to receive 400 errors if the token has expired
       if (!error.message.includes('400')) {
         this.$reportError({ message: 'errors.login_error' });
@@ -119,16 +133,12 @@ export default {
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+.header{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.footer{
+  bottom: 0;
 }
 </style>

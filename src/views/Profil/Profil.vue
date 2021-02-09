@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid class="my-5">
-    <h1>{{ $t('global.hello') }}, {{ user.firstname }} {{ user.lastname }}:</h1>
+  <b-container fluid class="my-5" v-if="$apolloData.queries.user.loading === false">
+    <h1>{{ $t('global.hello') }}, {{ user.name }}:</h1>
     <b-row class="justify-content-md-center">
       <b-col cols="12" md="auto">
         <label>{{ $t('login.email') }}:</label>
@@ -9,16 +9,13 @@
       </b-col>
     </b-row>
     <br />
-    <h2>Your bets:</h2>
+    <!-- <h2>Your bets:</h2>
     <b-row class="justify-content-md-center">
       <b-col cols="12" md="auto">
         <b-table small :fields="headers" :items="bets">
-          <!-- A virtual column -->
           <template #cell(index)="data">
             {{ data.index + 1 }}
           </template>
-
-          <!-- A custom formatted column -->
           <template #cell(away_team)="data">
             <b-avatar
               :src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${data.item.away_team.id}_dark.svg`"
@@ -31,7 +28,7 @@
           </template>
         </b-table>
       </b-col>
-    </b-row>
+    </b-row> -->
   </b-container>
 </template>
 
@@ -47,13 +44,12 @@ export default {
     user: {
       query() {
         const query = `
-          query user {
-            user(id: ${this.userId}) {
+          query user($id: ID!) {
+            user(id: $id) {
               id,
-              firstname,
-              lastname,
+              name,
               email,
-              gameonpoints,
+              points,
               bets {
                 id,
                 home_amount,
@@ -80,10 +76,15 @@ export default {
         `;
         return gql(query);
       },
+      variables() {
+        return {
+          id: this.userId,
+        };
+      },
+      skip() {
+        return this.userId === null;
+      },
     },
-  },
-  created() {
-    console.log(this);
   },
   computed: {
     headers() {
