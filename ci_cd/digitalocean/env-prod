@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+main() {
+
+  echo "Set cluster prod environment"
+  sed -ie "s/__CLUSTERENV__/prod/g" ci_cd/digitalocean/deploy
+
+  sed -ie "s|__VUE_APP_SENTRY_DSN__|$VUE_APP_SENTRY_DSN|g" Dockerfile
+  sed -ie "s|__VUE_APP_MODULES_ENV__|$VUE_APP_MODULES_ENV|g" Dockerfile
+  sed -ie "s|__VUE_APP_GRAPHQL_HTTP__|$VUE_APP_GRAPHQL_HTTP|g" Dockerfile
+  sed -ie "s|__VUE_APP_API_ROOT__|$VUE_APP_API_ROOT|g" Dockerfile
+  sed -ie "s|__VUE_APP_GOOGLE_ANALYTICS_UA_CODE__|$VUE_APP_GOOGLE_ANALYTICS_UA_CODE|g" Dockerfile
+}
+
+main "$@"

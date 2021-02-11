@@ -1,5 +1,5 @@
 version: v1.0
-name: Test MyApp
+name: CI
 agent:
   machine:
     type: e1-standard-2
@@ -13,10 +13,10 @@ blocks:
             - checkout
             - sem-version node 12
             - cache restore
-            - yarn --frozen-lockfile
+            - yarn
             - yarn test:unit
             # - yarn eslint
             # - yarn stylelint
 promotions:
-  - name: Deployment
+  - name: Deploy digital ocean
     pipeline_file: deployment.yml

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+main() {
+
+  yarn install
+
+  # Pre-req for gcloud mysql-client install
+  if [ $(dpkg-query -W -f='${Status}' mysql-client 2>/dev/null | grep -c "ok installed") -eq 0 ]
+  then
+    sudo apt-get update
+    sudo apt-get install -y mysql-client
+  fi
+
+  wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
+  chmod +x cloud_sql_proxy
+
+  ./cloud_sql_proxy -instances=megaswords:us-central1:megaswords=tcp:3306 -credential_file=/home/semaphore/.secrets/sql.json &
+
+  yarn migrate up
+
+}
+
+main "$@"
