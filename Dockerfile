@@ -14,7 +14,7 @@ ENV VUE_APP_MODULES_ENV __VUE_APP_MODULES_ENV__
 
 ## Install dependencies
 COPY package.json yarn.lock /usr/src/app/
-RUN yarn install --production
+RUN yarn
 
 ## Build app
 COPY . /usr/src/app/
