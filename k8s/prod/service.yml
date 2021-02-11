@@ -8,11 +8,11 @@ metadata:
 spec:
   externalTrafficPolicy: Cluster
   ports:
-  - name: api
+  - name: http80
     port: 80
     protocol: TCP
     targetPort: 80
-  - name: http
+  - name: http443
     port: 443
     protocol: TCP
     targetPort: 80
