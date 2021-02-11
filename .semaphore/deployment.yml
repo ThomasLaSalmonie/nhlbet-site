@@ -1,25 +1,27 @@
 version: v1.0
-name: Deployment
+name: Deploy digital ocean
 blocks:
   - name: Deploy
     task:
       secrets:
-        - name: ms-site-secret
+        - name: do-access-token
+        - name: nhlbet-site
+        - name: dockerhub
       prologue:
         commands:
-          - gcloud auth activate-service-account --key-file=.secrets/gcp.json
-          - gcloud auth configure-docker -q
+          - doctl auth init --access-token $DO_ACCESS_TOKEN
+          - doctl registry login
+          - doctl kubernetes cluster kubeconfig save 1a0ac277-a3d7-40cc-81f7-0c9a6eb80387
           - checkout
       jobs:
         - name: Deployment
           commands:
             - checkout
-            - source ./ci_cd/scripts/env-prod
-            - docker build -t megaswords-site-prod-container .
-            - 'docker tag megaswords-site-prod-container gcr.io/megaswords/megaswords-site:$SEMAPHORE_WORKFLOW_ID'
-            - docker push gcr.io/megaswords/megaswords-site:$SEMAPHORE_WORKFLOW_ID
-            - source ./ci_cd/scripts/setup
-            - source ./ci_cd/scripts/deploy
+            - source ./ci_cd/digitalocean/env-prod
+            - docker build -t nhlbet-site .
+            - docker tag nhlbet-site registry.digitalocean.com/mysportsbet/nhlbet-site:$SEMAPHORE_WORKFLOW_ID
+            - docker push registry.digitalocean.com/mysportsbet/nhlbet-site:$SEMAPHORE_WORKFLOW_ID
+            - source ./ci_cd/digitalocean/deploy
 agent:
   machine:
     type: e1-standard-2

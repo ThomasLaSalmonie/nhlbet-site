@@ -1,5 +1,5 @@
 version: v1.0
-name: Test MyApp
+name: CI
 agent:
   machine:
     type: e1-standard-2
@@ -18,5 +18,5 @@ blocks:
             # - yarn eslint
             # - yarn stylelint
 promotions:
-  - name: Deployment
+  - name: Deploy digital ocean
     pipeline_file: deployment.yml

@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nhlbet-site
+  name: nhlbet-site
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: api
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: http
+    port: 443
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nhlbet-site
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
