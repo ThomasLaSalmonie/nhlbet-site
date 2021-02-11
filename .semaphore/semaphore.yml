@@ -13,7 +13,7 @@ blocks:
             - checkout
             - sem-version node 12
             - cache restore
-            - yarn --frozen-lockfile
+            - yarn
             - yarn test:unit
             # - yarn eslint
             # - yarn stylelint
