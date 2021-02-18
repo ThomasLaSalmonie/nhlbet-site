@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 export default {
   authLoginSuccess(state, { token }) {
     const payload = jwt.decode(token);
-    console.log(payload);
     const {
       id, email, firstname, lastname, points,
     } = payload;

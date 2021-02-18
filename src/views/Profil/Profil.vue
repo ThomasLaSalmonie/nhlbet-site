@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid class="my-5" v-if="$apolloData.queries.user.loading === false">
+  <b-container fluid class="my-5" v-if="$apolloData.queries.user.loading === false && user">
     <h1>{{ $t('global.hello') }}, {{ user.name }}:</h1>
     <b-row class="justify-content-md-center">
       <b-col cols="12" md="auto">
