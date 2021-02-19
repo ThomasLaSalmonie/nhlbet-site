@@ -43,132 +43,67 @@
         fluid
       >
         <b-card
-          class="mb-2 d-none d-md-flex"
+          class="mb-2"
           :header-bg-variant="headerColor(game)"
           :header="`${game.home_team.name} vs ${game.away_team.name}`"
         >
-          <b-row>
-            <b-col>
-              <b-card
-                :img-src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${game.home_team.id}_dark.svg`"
-                :img-alt="`Logo équipe test`"
-                img-top
-                tag="article"
-                class="mb-2"
-                :title="game.home_team.code"
-              >
-              </b-card>
-            </b-col>
-            <b-col>
-              <b-card-title v-if="(new Date(game.game_date) - new Date()) >= 0">game start at : {{ game.game_date }}</b-card-title>
-              <b-card-title v-else>game ended</b-card-title>
-              <b-card
-                class="mb-2"
-                title="Score"
-              >
-                <b-card-title>{{ game.home_score }} - {{ game.away_score }}</b-card-title>
-                <div v-if="isLoggedIn && (new Date(game.game_date) - new Date()) >= 0">
-                  <b-row>
-                    <b-col>
-                      <b-form-input
-                        v-model="game.user_bet.home_amount"
-                        type="number"
-                        placeholder="0"
-                        :disabled="!!game.user_bet.away_amount"
-                      />
-                    </b-col>
-                    <b-card-text>_</b-card-text>
-                    <b-col>
-                      <b-form-input
-                        v-model="game.user_bet.away_amount"
-                        type="number"
-                        placeholder="0"
-                        :disabled="!!game.user_bet.home_amount"
-                      />
-                    </b-col>
-                  </b-row>
-                  <br />
-
-                  <b-card-text v-if="game.user_bet.home_amount > 0 || game.user_bet.away_amount > 0">potential win: {{ game.user_bet.potential_win }} </b-card-text>
-                  <b-card-text>Total bet: {{ game.total_bet }}</b-card-text>
-                  <b-button variant="primary" @click="bet(game)">{{ $t('bets.bet') }}</b-button>
-                </div>
-              </b-card>
-            </b-col>
-            <b-col>
-              <b-card
-                :img-src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${game.away_team.id}_dark.svg`"
-                :img-alt="`Logo équipe test`"
-                img-top
-                tag="article"
-                class="mb-2"
-                :title="game.away_team.code"
-              >
-              </b-card>
-            </b-col>
-          </b-row>
-        </b-card>
-        <b-card
-          class="mb-2 d-sm-block d-md-none"
-          :header-bg-variant="headerColor(game)"
-          :header="`${game.home_team.name} vs ${game.away_team.name}`"
-        >
-          <b-card-title v-if="(new Date(game.game_date) - new Date()) >= 0">game start at : {{ game.game_date }}</b-card-title>
+          <b-card-title v-if="(new Date(game.game_date) - new Date()) >= 0">
+            game start at : {{ game.game_date }}
+          </b-card-title>
           <b-card-title v-else>game ended</b-card-title>
           <b-row>
             <b-col>
               <b-img
                 :src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${game.home_team.id}_dark.svg`"
-                :alt="`Logo équipe test`"
+                :alt="`Logo ${game.home_team.code}`"
                 tag="article"
                 class="mb-2"
+              />
+              <h3> {{ game.home_team.code }} </h3>
+              <b-button
+                v-if="isLoggedIn && (new Date(game.game_date) - new Date()) >= 0"
+                variant="warning"
+                :disabled="!!game.user_bet.away_amount"
+                @click="bet(game, 100, 'home')"
               >
-              </b-img>
+                {{ $t('bets.bet') }} 100
+              </b-button>
             </b-col>
             <b-col>
               <b-card
-                style="width: 100px;"
                 class="mb-2"
               >
                 Score
                 <b-card-title>{{ game.home_score }} - {{ game.away_score }}</b-card-title>
+                <div v-if="isLoggedIn && (new Date(game.game_date) - new Date()) >= 0">
+                  <b-card-text
+                    v-if="game.user_bet.home_amount > 0 || game.user_bet.away_amount > 0"
+                  >
+                    potential win: {{ game.user_bet.potential_win }}
+                  </b-card-text>
+                  <b-card-text>Total bet: {{ game.total_bet }}</b-card-text>
+                  <!-- <b-button variant="primary" @click="bet(game)">{{ $t('bets.bet') }}</b-button> -->
+                </div>
               </b-card>
             </b-col>
             <b-col>
               <b-img
                 :src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${game.away_team.id}_dark.svg`"
-                :alt="`Logo équipe test`"
+                :alt="`Logo ${game.away_team.code}`"
                 tag="article"
                 class="mb-2"
+              />
+              <h3> {{ game.away_team.code }} </h3>
+              <b-button
+                v-if="isLoggedIn && (new Date(game.game_date) - new Date()) >= 0"
+                variant="warning"
+                :disabled="!!game.user_bet.home_amount"
+                @click="bet(game, 100, 'away')"
               >
-              </b-img>
+                {{ $t('bets.bet') }} 100
+              </b-button>
             </b-col>
           </b-row>
-          <div v-if="isLoggedIn && (new Date(game.game_date) - new Date()) >= 0">
-            <b-row>
-              <b-col>
-                <b-form-input
-                  v-model="game.user_bet.home_amount"
-                  type="number"
-                  placeholder="0"
-                  :disabled="!!game.user_bet.away_amount"
-                />
-              </b-col>
-              <b-card-text>_</b-card-text>
-              <b-col>
-                <b-form-input
-                  v-model="game.user_bet.away_amount"
-                  type="number"
-                  placeholder="0"
-                  :disabled="!!game.user_bet.home_amount"
-                />
-              </b-col>
-            </b-row>
-            <br />
-            <b-card-text v-if="game.user_bet.home_amount > 0 || game.user_bet.away_amount > 0">potential win: {{ game.user_bet.potential_win }} </b-card-text>
-            <b-card-text>Total bet: {{ game.total_bet }}</b-card-text>
-            <b-button variant="primary" @click="bet(game)">{{ $t('bets.bet') }}</b-button>
-          </div>
         </b-card>
       </b-container>
       <b-pagination
@@ -239,7 +174,7 @@ export default {
       },
       variables() {
         return {
-          offset: this.currentPage * 10,
+          offset: this.currentPage * 10 - 10,
           team: this.selected,
           date: this.formatDates(this.dateOne, this.dateTwo, ','),
         };
@@ -284,18 +219,19 @@ export default {
     },
   },
   methods: {
-    async bet(game) {
+    async bet(game, amount, team) {
       const data = {
         game_id: game.id,
-        home_amount: parseFloat(game.user_bet.home_amount) > 0
-          ? parseFloat(game.user_bet.home_amount)
+        home_amount: team === 'home'
+          ? parseFloat(amount)
           : 0,
-        away_amount: parseFloat(game.user_bet.away_amount) > 0
-          ? parseFloat(game.user_bet.away_amount)
+        away_amount: team === 'away'
+          ? parseFloat(amount)
           : 0,
       };
+      const index = this.games.indexOf(game);
       try {
-        const mutation = 'mutation patchBet($id: Int, $patch: BetPatch!) { patchBet(id: $id, patch: $patch) { id, potential_win } }';
+        const mutation = 'mutation patchBet($id: Int, $patch: BetPatch!) { patchBet(id: $id, patch: $patch) { id, potential_win, total_amount } }';
         const response = await this.$apollo.mutate({
           mutation: gql(mutation),
           variables: {
@@ -303,12 +239,18 @@ export default {
             patch: data,
           },
         });
-        const index = this.games.indexOf(game);
+        if (team === 'home') {
+          this.games[index].user_bet.home_amount = amount;
+        } else {
+          this.games[index].user_bet.away_amount = amount;
+        }
+        this.games[index].total_bet = response.data.patchBet.total_amount;
         this.games[index].user_bet.id = response.data.patchBet.id;
         this.games[index].user_bet.potential_win = response.data.patchBet.potential_win;
-      } catch (e) {
-        // TODO: display error points
-        console.log(e);
+      } catch (error) {
+        console.error(error);
+        this.showToast({ message: error.message, title: 'Here', variant: 'danger' });
+        // this.games[index].user_bet.messages = response.errors[0].message;
       }
     },
     headerColor(game) {

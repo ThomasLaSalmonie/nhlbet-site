@@ -178,7 +178,6 @@ export default {
     },
     visibleHandler(notification) {
       // notification.is_viewed = true;
-      console.log(notification);
     },
     nFormatter(num) {
       if (num >= 1000000000) {

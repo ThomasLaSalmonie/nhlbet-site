@@ -15,7 +15,7 @@ import useMeta from './plugins/meta';
 import usePersistedState from './plugins/persisted-state';
 import useAnalytics from './plugins/analytics';
 import useBootstrap from './plugins/bootstrap';
-import useSnackbar from './plugins/snackbar';
+import useToast from './plugins/toast';
 import useDatepicker from './plugins/datepicker';
 
 import App from './App.vue';
@@ -73,7 +73,7 @@ export default function createApp(context = {}) {
   useMeta(context);
   useAnalytics(context);
   useBootstrap(context);
-  useSnackbar(context);
+  useToast(context);
   useDatepicker(context);
 
   // Set store additional properties
