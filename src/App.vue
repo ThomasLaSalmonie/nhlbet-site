@@ -78,18 +78,22 @@
       </b-navbar-nav>
     </b-navbar>
     <router-view class="my-5"/>
-    <b-navbar type="dark" variant="dark" class="footer">
-      <b-navbar-nav class="ml-auto">
-        <b-nav-item class="text-center" disabled variant="light">
-          {{ new Date().getFullYear() }} - My NFL Bet
-        </b-nav-item>
-      </b-navbar-nav>
-      <b-navbar-nav class="ml-auto" small>
-        <b-nav-item class="text-center" href="https://twitter.com/mysportsbet_" target="blank_">
-          <b-icon icon="twitter"/>
-        </b-nav-item>
-      </b-navbar-nav>
-    </b-navbar>
+    <footer>
+      <b-container class="bg-dark py-3" fluid>
+        <b-row align-v="center">
+          <b-col md="4" offset-md="4">
+            <span class="text-center text-white">
+              {{ new Date().getFullYear() }} - My NFL Bet
+            </span>
+          </b-col>
+          <b-col md="2" offset-md="2">
+            <a class="text-center" href="https://twitter.com/mysportsbet_" target="blank_">
+              <b-icon icon="twitter"/>
+            </a>
+          </b-col>
+        </b-row>
+      </b-container>
+    </footer>
   </div>
 </template>
 

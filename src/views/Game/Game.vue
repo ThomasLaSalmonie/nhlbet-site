@@ -37,13 +37,13 @@
       v-if="$apolloData.queries.games.loading === false"
       class="justify-content-md-center"
     >
-      <b-row
+      <b-container
         v-for="(game, index) in games"
         :key="index"
-        no-gutters
+        fluid
       >
         <b-card
-          class="mb-2"
+          class="mb-2 d-none d-md-flex"
           :header-bg-variant="headerColor(game)"
           :header="`${game.home_team.name} vs ${game.away_team.name}`"
         >
@@ -54,7 +54,6 @@
                 :img-alt="`Logo équipe test`"
                 img-top
                 tag="article"
-                style="width: 200px;"
                 class="mb-2"
                 :title="game.home_team.code"
               >
@@ -64,7 +63,6 @@
               <b-card-title v-if="(new Date(game.game_date) - new Date()) >= 0">game start at : {{ game.game_date }}</b-card-title>
               <b-card-title v-else>game ended</b-card-title>
               <b-card
-                style="width: 300px;"
                 class="mb-2"
                 title="Score"
               >
@@ -103,7 +101,6 @@
                 :img-alt="`Logo équipe test`"
                 img-top
                 tag="article"
-                style="width: 200px;"
                 class="mb-2"
                 :title="game.away_team.code"
               >
@@ -111,7 +108,69 @@
             </b-col>
           </b-row>
         </b-card>
-      </b-row>
+        <b-card
+          class="mb-2 d-sm-block d-md-none"
+          :header-bg-variant="headerColor(game)"
+          :header="`${game.home_team.name} vs ${game.away_team.name}`"
+        >
+          <b-card-title v-if="(new Date(game.game_date) - new Date()) >= 0">game start at : {{ game.game_date }}</b-card-title>
+          <b-card-title v-else>game ended</b-card-title>
+          <b-row>
+            <b-col>
+              <b-img
+                :src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${game.home_team.id}_dark.svg`"
+                :alt="`Logo équipe test`"
+                tag="article"
+                class="mb-2"
+              >
+              </b-img>
+            </b-col>
+            <b-col>
+              <b-card
+                style="width: 100px;"
+                class="mb-2"
+              >
+                Score
+                <b-card-title>{{ game.home_score }} - {{ game.away_score }}</b-card-title>
+              </b-card>
+            </b-col>
+            <b-col>
+              <b-img
+                :src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${game.away_team.id}_dark.svg`"
+                :alt="`Logo équipe test`"
+                tag="article"
+                class="mb-2"
+              >
+              </b-img>
+            </b-col>
+          </b-row>
+          <div v-if="isLoggedIn && (new Date(game.game_date) - new Date()) >= 0">
+            <b-row>
+              <b-col>
+                <b-form-input
+                  v-model="game.user_bet.home_amount"
+                  type="number"
+                  placeholder="0"
+                  :disabled="!!game.user_bet.away_amount"
+                />
+              </b-col>
+              <b-card-text>_</b-card-text>
+              <b-col>
+                <b-form-input
+                  v-model="game.user_bet.away_amount"
+                  type="number"
+                  placeholder="0"
+                  :disabled="!!game.user_bet.home_amount"
+                />
+              </b-col>
+            </b-row>
+            <br />
+            <b-card-text v-if="game.user_bet.home_amount > 0 || game.user_bet.away_amount > 0">potential win: {{ game.user_bet.potential_win }} </b-card-text>
+            <b-card-text>Total bet: {{ game.total_bet }}</b-card-text>
+            <b-button variant="primary" @click="bet(game)">{{ $t('bets.bet') }}</b-button>
+          </div>
+        </b-card>
+      </b-container>
       <b-pagination
         v-model="currentPage"
         :total-rows="ngames"
@@ -121,42 +180,6 @@
         next-text="Next"
         last-text="Last"
       ></b-pagination>
-    </b-container>
-    <b-container
-      v-else
-      class="justify-content-md-center"
-    >
-      <b-card
-        v-for="i in 4"
-        :key="i"
-        class="mb-2"
-        :header="`... vs ...`"
-      >
-        <b-row>
-          <b-col>
-            <b-card no-body img-top>
-              <b-skeleton-img card-img="top" aspect="3:1"></b-skeleton-img>
-              <b-card-body>XXX</b-card-body>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card-title>game start at : </b-card-title>
-            <b-card
-              style="width: 300px;"
-              class="mb-2"
-              title="Score"
-            >
-              <b-card-title>0 - 0</b-card-title>
-            </b-card>
-          </b-col>
-          <b-col>
-            <b-card no-body img-top>
-              <b-skeleton-img card-img="top" aspect="3:1"></b-skeleton-img>
-              <b-card-body>XXX</b-card-body>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-card>
     </b-container>
   </b-container>
 </template>
@@ -225,11 +248,18 @@ export default {
     ngames: {
       query() {
         const query = `
-          query ngames {
-            ngames
+          query ngames($team: Int, $date: String, $offset: Int) {
+            ngames(team: $team, date: $date, offset: $offset)
           }
         `;
         return gql(query);
+      },
+      variables() {
+        return {
+          offset: this.currentPage * 10,
+          team: this.selected,
+          date: this.formatDates(this.dateOne, this.dateTwo, ','),
+        };
       },
     },
     teams: {

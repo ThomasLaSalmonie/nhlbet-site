@@ -1,24 +1,22 @@
 <template>
   <div>
     <b-container fluid>
-      <b-row>
-        <b-col
-          v-for="(team, index) in teams"
-          :key="index"
-        >
-          <b-card
-            :img-src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${team.id}_dark.svg`"
-            :img-alt="`Logo équipe ${team.name}`"
-            img-top
-            tag="article"
-            style="width: 200px;"
-            class="mb-2"
-            :title="team.name"
-          >
-            <b-card-text>{{ team.name }}</b-card-text>
-            <b-button :href="team.link" variant="primary" target="_blank">{{ $t('teams.official_site') }}</b-button>
-          </b-card>
-        </b-col>
+      <b-row class="justify-content-md-center">
+      <b-card
+        v-for="(team, index) in teams"
+        :key="index"
+        tag="article"
+        style="max-width: 170px;"
+        class="m-2 mx-auto"
+      >
+        <b-card-title>{{ team.name }}</b-card-title>
+        <b-img
+          :src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${team.id}_dark.svg`"
+          :alt="`Logo équipe ${team.name}`"
+          class="m-1"
+        />
+        <b-button :href="team.link" variant="primary" target="_blank">{{ $t('teams.official_site') }}</b-button>
+      </b-card>
       </b-row>
     </b-container>
   </div>
