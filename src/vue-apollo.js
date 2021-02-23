@@ -14,6 +14,26 @@ const AUTH_TOKEN = 'apollo-token';
 // Http endpoint
 const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'http://localhost:4000/graphql';
 
+const uncruncher = new ApolloLink((operation, forward) => forward(operation)
+  .map((response) => {
+    if (process.env.VUE_APP_MODULES_ENV === 'production') {
+      // eslint-disable-next-line no-param-reassign
+      response.data = uncrunch(response.data);
+    }
+    return response;
+  }));
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  operation.setContext({
+    headers: {
+      authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`,
+      lang: localStorage.getItem('content_lang'),
+    },
+  });
+  return forward(operation);
+});
+
 // Config
 const defaultOptions = {
   // You can use `https` for secure connection (recommended in production)
@@ -33,12 +53,7 @@ const defaultOptions = {
   ssr: false,
 
   // Override default http link
-  link: setContext(() => ({
-    headers: {
-      authorization: `Bearer ${localStorage.getItem('AUTH_TOKEN')}`,
-      lang: localStorage.getItem('content_lang'),
-    },
-  })),
+  link: concat(uncruncher, authMiddleware),
 
   // Override default cache
   cache: new InMemoryCache({
@@ -73,21 +88,6 @@ export function createProvider(context, options = {}) {
       console.log('%cError', 'background: red; color: white; padding: 2px 4px; border-radius: 3px; font-weight: bold;', error.message);
     },
   });
-  // Enable uncrunch in production
-  if (process.env.VUE_APP_MODULES_ENV === 'production') {
-    // Add uncrunch afterware
-    const uncruncher = new ApolloLink((operation, forward) => forward(operation)
-      .map((response) => {
-        // eslint-disable-next-line no-param-reassign
-        response.data = uncrunch(response.data);
-        return response;
-      }));
-
-    apolloProvider.clients.defaultClient.link = concat(
-      uncruncher,
-      apolloProvider.clients.defaultClient.link,
-    );
-  }
   return apolloProvider;
 }
 
