@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken';
 
 export default {
+  authUpdatePoints(state, { points }) {
+    state.user.points = points;
+  },
   authLoginSuccess(state, { token }) {
     const payload = jwt.decode(token);
     const {
@@ -23,8 +26,5 @@ export default {
   authLogoutError(state) {
     state.user = {};
     state.token = null;
-  },
-  setRequestedPath(state, requestedPath) {
-    state.requestedPath = requestedPath;
   },
 };

@@ -9,6 +9,9 @@ import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from '@/helpers/constants';
 import { onLogin, onLogout } from '../../vue-apollo';
 
 export default {
+  updatePoints({ commit }, { points }) {
+    commit('authUpdatePoints', { points });
+  },
   /**
    * Basic login with email & password
    *
@@ -156,15 +159,5 @@ export default {
         reject(error);
       }
     });
-  },
-  /**
-   * Set Requested Path before login
-   *
-   * @param      {Object}    arg1           Vuex parameters
-   * @param      {Function}  arg1.commit    Commit method
-   * @param      {String}    requestedPath  The path user is initially accessing
-   */
-  setRequestedPath({ commit }, requestedPath) {
-    commit('setRequestedPath', requestedPath);
   },
 };

@@ -121,7 +121,7 @@
 
 <script>
 import gql from 'graphql-tag';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   data() {
@@ -219,6 +219,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions({
+      updatePoints: 'auth/updatePoints',
+    }),
     async bet(game, amount, team) {
       const data = {
         game_id: game.id,
@@ -247,10 +250,11 @@ export default {
         this.games[index].total_bet = response.data.patchBet.total_amount;
         this.games[index].user_bet.id = response.data.patchBet.id;
         this.games[index].user_bet.potential_win = response.data.patchBet.potential_win;
+        const newPoints = this.points - amount;
+        this.updatePoints({ points: newPoints });
       } catch (error) {
         console.error(error);
         this.showToast({ message: error.message, title: 'Here', variant: 'danger' });
-        // this.games[index].user_bet.messages = response.errors[0].message;
       }
     },
     headerColor(game) {

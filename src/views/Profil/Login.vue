@@ -48,10 +48,10 @@ export default {
       event.preventDefault();
       const { form } = this;
       try {
+        this.showToast({ message: 'dialogs.login_success', variant: 'success' });
         await this.login(form);
-        this.$reportSuccess({ message: 'dialogs.login_success' });
       } catch (e) {
-        this.$reportError({ message: 'errors.login_error' });
+        this.showToast({ message: 'errors.login_error', title: 'Here', variant: 'danger' });
       }
     },
   },
