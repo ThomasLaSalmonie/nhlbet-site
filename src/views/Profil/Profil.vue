@@ -1,4 +1,5 @@
 <template>
+  <b-container>
   <b-container fluid class="my-5" v-if="$apolloData.queries.user.loading === false && user">
     <h1>{{ $t('global.hello') }}, {{ user.name }}:</h1>
     <b-row class="justify-content-md-center">
@@ -30,10 +31,12 @@
       </b-col>
     </b-row> -->
   </b-container>
+  </b-container>
 </template>
 
 <script>
 import gql from 'graphql-tag';
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -44,7 +47,7 @@ export default {
     user: {
       query() {
         const query = `
-          query user($id: ID!) {
+          query user($id: Int!) {
             user(id: $id) {
               id,
               name,
@@ -87,6 +90,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters({ userId: 'auth/userId' }),
     headers() {
       return [
         'game_date',
