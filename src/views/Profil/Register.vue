@@ -5,17 +5,17 @@
     <b-form @submit="onSubmit">
       <b-row class="justify-content-md-center">
         <b-col cols="12" md="auto">
-          <label>{{ $t('login.firstname') }}*:</label>
+          <label>{{ $t('profil.firstname') }}*:</label>
           <b-form-input v-model="form.firstname" required/>
-          <label>{{ $t('login.lastname') }}*:</label>
+          <label>{{ $t('profil.lastname') }}*:</label>
           <b-form-input v-model="form.lastname" required/>
-          <label>{{ $t('login.sex') }}:</label>
+          <label>{{ $t('profil.sex') }}:</label>
           <b-form-select v-model="form.gender" :options="sex_options" required />
-          <label>{{ $t('login.email') }}*:</label>
+          <label>{{ $t('profil.email') }}*:</label>
           <b-form-input v-model="form.email" type="email" required />
-          <label>{{ $t('login.password') }}*:</label>
+          <label>{{ $t('profil.password') }}*:</label>
           <b-form-input v-model="form.password" type="password" required />
-          <label>{{ $t('login.confirm_password') }}*:</label>
+          <label>{{ $t('profil.confirm_password') }}*:</label>
           <b-form-input v-model="form.confirm_password" type="password" required />
         </b-col>
       </b-row>

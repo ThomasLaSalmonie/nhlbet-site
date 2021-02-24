@@ -3,7 +3,7 @@
     <h1>Leaderboard:</h1>
     <b-row class="justify-content-md-center">
       <b-col cols="12" md="auto" v-if="$apolloData.queries.users.loading === false">
-        <b-table small :fields="headers" :items="usersData">
+        <b-table small :fields="headers" :items="users">
           <template #cell(rank)="data">
             <h2 v-if="data.item.rank === 1">
               <b-icon icon="award-fill" class="h1" style="color: #EDCE29;"/>
@@ -31,7 +31,9 @@
 </template>
 
 <script>
+/* eslint-disable no-param-reassign */
 import gql from 'graphql-tag';
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -47,31 +49,36 @@ export default {
               id,
               name,
               points,
+              amount_won,
+              bets_won,
+              bets_lost,
             }
           }
         `;
         return gql(query);
       },
+      result(data) {
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < data.data.users.length; i++) {
+          data.data.users[i].rank = i + 1;
+          if (i > 0 && data.data.users[i].points === data.data.users[i - 1].points) {
+            data.data.users[i].rank = data.data.users[i - 1].rank;
+          }
+        }
+      },
     },
   },
   computed: {
+    ...mapGetters({ userId: 'auth/userId' }),
     headers() {
       return [
         'rank',
         'name',
         'points',
+        'bets_won',
+        'bets_lost',
+        'amount_won',
       ];
-    },
-    usersData() {
-      const results = this.users;
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < results.length; i++) {
-        results[i].rank = i + 1;
-        if (i > 0 && results[i].points === results[i - 1].points) {
-          results[i].rank = results[i - 1].rank;
-        }
-      }
-      return results;
     },
   },
   methods: {

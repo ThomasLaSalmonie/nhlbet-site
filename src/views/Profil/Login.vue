@@ -4,11 +4,11 @@
     {{ $t('global.or') }}
     <router-link to="/register">{{ $t('login.register') }}</router-link>
     <b-form @submit="onSubmit">
-      <b-row class="justify-content-md-center">
-        <b-col cols="12" md="auto">
-          <label>{{ $t('login.email') }}*:</label>
+      <b-row class="justify-content-sm-center">
+        <b-col cols="12" sm="auto">
+          <label>{{ $t('profil.email') }}*:</label>
           <b-form-input v-model="form.email" type="email" required/>
-          <label>{{ $t('login.password') }}*:</label>
+          <label>{{ $t('profil.password') }}*:</label>
           <b-form-input v-model="form.password" type="password" required/>
           <b-form-checkbox v-model="form.checked" class="mb-2 mr-sm-2 mb-sm-0">
             {{ $t('login.stay_logged_in') }}

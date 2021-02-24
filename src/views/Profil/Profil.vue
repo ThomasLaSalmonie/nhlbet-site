@@ -4,9 +4,19 @@
     <h1>{{ $t('global.hello') }}, {{ user.name }}:</h1>
     <b-row class="justify-content-md-center">
       <b-col cols="12" md="auto">
-        <label>{{ $t('login.email') }}:</label>
-          <b-form-input v-model="user.email" type="email" required />
-          <b-button class="m-2 p-1" size="sm" variant="primary">{{ $t('profil.update_email') }}</b-button>
+        <label>{{ $t('profil.firstname') }}:</label>
+        <b-form-input v-model="user.firstname" />
+        <label>{{ $t('profil.lastname') }}:</label>
+        <b-form-input v-model="user.lastname" />
+        <label>{{ $t('profil.password') }}:</label>
+        <b-form-input v-model="user.password" type="password" />
+        <label>{{ $t('profil.confirm_password') }}:</label>
+        <b-form-input v-model="user.confirm_password" type="password" />
+        <label>{{ $t('profil.display_name') }}:</label>
+        <b-form-checkbox v-model="user.display_name" name="display_name" switch />
+        <b-button class="m-2 p-1" size="sm" variant="primary" @click="submit">
+          {{ $t('profil.update_profil') }}
+        </b-button>
       </b-col>
     </b-row>
     <br />
@@ -51,7 +61,10 @@ export default {
             user(id: $id) {
               id,
               name,
+              firstname,
+              lastname,
               email,
+              display_name,
               points,
               bets {
                 id,
@@ -119,6 +132,39 @@ export default {
     },
   },
   methods: {
+    async submit() {
+      const {
+        // eslint-disable-next-line camelcase
+        firstname, lastname, password, confirm_password, display_name,
+      } = this.user;
+      const mutation = `mutation patchUser($id: Int!, $patch: UserPatch!) {
+        patchUser(id: $id, patch: $patch) {
+          id,
+          firstname,
+          lastname,
+          display_name,
+        }
+      }`;
+      try {
+        const response = await this.$apollo.mutate({
+          mutation: gql(mutation),
+          variables: {
+            id: this.userId,
+            patch: {
+              firstname,
+              lastname,
+              password,
+              confirm_password,
+              display_name,
+            },
+          },
+        });
+        this.user = { ...this.user, ...response.data.patchUser };
+      } catch (error) {
+        console.error(error);
+        this.showToast({ message: error.message, variant: 'danger' });
+      }
+    },
   },
 };
 </script>

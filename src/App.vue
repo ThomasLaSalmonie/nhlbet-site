@@ -35,7 +35,11 @@
         <b-nav-item-dropdown v-if="isLoggedIn === true" right lazy>
           <template #button-content>
             <b-avatar >
-              <b-icon icon="bell-fill" :style="unreadNotifications === true ? 'color: red;' : ''" />
+              <b-icon
+                icon="bell-fill"
+                :style="unreadNotifications === true ? 'color: red;' : ''"
+                @click="viewNotifications"
+              />
             </b-avatar>
           </template>
           <b-card-header>
@@ -48,7 +52,6 @@
           >
             <b-card
               v-for="(notification, index) in notifications"
-              v-b-visible.once="visibleHandler(notification)"
               :key="index"
               bg-variant="dark"
               class="my-2"
@@ -138,7 +141,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters({ isLoggedIn: 'auth/isLoggedIn', points: 'auth/points' }),
+    ...mapGetters({ isLoggedIn: 'auth/isLoggedIn', points: 'auth/points', userId: 'auth/userId' }),
     gamePoints() {
       return this.nFormatter(this.points);
     },
@@ -176,8 +179,21 @@ export default {
     getDate(date) {
       return moment(date).format('YYYY-MM-DD');
     },
-    visibleHandler(notification) {
-      // notification.is_viewed = true;
+    async viewNotifications() {
+      const mutation = 'mutation viewNotifications($id: Int!) { viewNotifications(id: $id) }';
+      console.log(this.userId);
+      if (this.unreadNotifications) {
+        await this.$apollo.mutate({
+          mutation: gql(mutation),
+          variables: {
+            id: this.userId,
+          },
+        });
+        this.notifications.forEach((notification) => {
+          // eslint-disable-next-line no-param-reassign
+          notification.is_viewed = true;
+        });
+      }
     },
     nFormatter(num) {
       if (num >= 1000000000) {
