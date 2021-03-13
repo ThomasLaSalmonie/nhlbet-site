@@ -182,7 +182,6 @@ export default {
     },
     async viewNotifications() {
       const mutation = 'mutation viewNotifications($id: Int!) { viewNotifications(id: $id) }';
-      console.log(this.userId);
       if (this.unreadNotifications) {
         await this.$apollo.mutate({
           mutation: gql(mutation),

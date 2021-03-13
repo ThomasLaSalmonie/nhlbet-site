@@ -44,15 +44,15 @@ export default {
       const { form } = this;
       try {
         const mutation = 'mutation forgotpasswordUser($email: String!) { forgotpasswordUser(email: $email) }';
-        const response = await this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: gql(mutation),
           variables: {
             email: form.email,
           },
         });
-        console.log(response);
         this.isSubmitted = true;
       } catch (e) {
+        console.error(e);
         this.showToast({ message: 'errors.reset_password', variant: 'danger' });
       }
     },
