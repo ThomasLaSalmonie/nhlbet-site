@@ -32,6 +32,15 @@ export default {
     sex: 'Genre',
     display_name: 'Afficher le nom dans le classement public',
   },
+  group: {
+    details: 'Afficher les détails',
+    create: 'Créer un nouveau groupe',
+    name: 'Nom',
+    image: 'Image',
+    isPublic: 'Est-ce un groupe publique ?',
+    accept: 'Accepter',
+    decline: 'Décliner',
+  },
   teams: {
     official_site: 'Site officiel',
   },

@@ -1,47 +1,51 @@
 <template>
-  <b-container>
-  <b-container fluid class="my-5" v-if="$apolloData.queries.user.loading === false && user">
-    <h1>{{ $t('global.hello') }}, {{ user.name }}:</h1>
-    <b-row class="justify-content-md-center">
-      <b-col cols="12" md="auto">
-        <label>{{ $t('profil.firstname') }}:</label>
-        <b-form-input v-model="user.firstname" />
-        <label>{{ $t('profil.lastname') }}:</label>
-        <b-form-input v-model="user.lastname" />
-        <label>{{ $t('profil.password') }}:</label>
-        <b-form-input v-model="user.password" type="password" />
-        <label>{{ $t('profil.confirm_password') }}:</label>
-        <b-form-input v-model="user.confirm_password" type="password" />
-        <label>{{ $t('profil.display_name') }}:</label>
-        <b-form-checkbox v-model="user.display_name" name="display_name" switch />
-        <b-button class="m-2 p-1" size="sm" variant="primary" @click="submit">
-          {{ $t('profil.update_profil') }}
-        </b-button>
+  <div>
+    <b-row align-h="end">
+      <b-col cols="2">
+        <b-button v-b-toggle.menu_profil class="d-md-none"><b-icon icon="list"/></b-button>
       </b-col>
     </b-row>
-    <br />
-    <!-- <h2>Your bets:</h2>
-    <b-row class="justify-content-md-center">
-      <b-col cols="12" md="auto">
-        <b-table small :fields="headers" :items="bets">
-          <template #cell(index)="data">
-            {{ data.index + 1 }}
-          </template>
-          <template #cell(away_team)="data">
-            <b-avatar
-              :src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${data.item.away_team.id}_dark.svg`"
-            />
-          </template>
-          <template #cell(home_team)="data">
-            <b-avatar
-              :src="`https://www-league.nhlstatic.com/builds/site-core/01c1bfe15805d69e3ac31daa090865845c189b1d_1458063644/images/team/logo/current/${data.item.home_team.id}_dark.svg`"
-            />
-          </template>
-        </b-table>
+    <b-row>
+      <b-col cols="12" md="9">
+        <router-view />
       </b-col>
-    </b-row> -->
-  </b-container>
-  </b-container>
+      <b-col cols="3" class="border-left d-none d-md-block">
+        <b-card-title><router-link to="/profil">Profil</router-link></b-card-title>
+        <b-card-title><router-link to="/groups">Your groups</router-link></b-card-title>
+        <b-list-group
+          class="pr-3"
+        >
+          <b-list-group-item
+            v-for="group in groups"
+            :key="group.id"
+            :to="`/group/${group.id}`"
+          >
+            {{ group.name }}
+          </b-list-group-item>
+        </b-list-group>
+      </b-col>
+      <b-sidebar
+        id="menu_profil"
+        right
+        backdrop
+        shadow
+      >
+        <b-col cols="12">
+          <b-card-title><router-link to="/profil">Profil</router-link></b-card-title>
+          <b-list-group>
+            <b-card-title><router-link to="/groups">Your groups</router-link></b-card-title>
+            <b-list-group-item
+              v-for="group in groups"
+              :key="group.id"
+              :to="`/group/${group.id}`"
+            >
+              {{ group.name }}
+            </b-list-group-item>
+          </b-list-group>
+        </b-col>
+      </b-sidebar>
+    </b-row>
+  </div>
 </template>
 
 <script>
@@ -54,39 +58,13 @@ export default {
     };
   },
   apollo: {
-    user: {
+    groups: {
       query() {
         const query = `
-          query user($id: Int!) {
-            user(id: $id) {
+          query groups($userId: Int!) {
+            groups(userId: $userId) {
               id,
               name,
-              firstname,
-              lastname,
-              email,
-              display_name,
-              points,
-              bets {
-                id,
-                home_amount,
-                away_amount,
-                game {
-                  id,
-                  game_date,
-                  away_team {
-                    id,
-                    name,
-                    code
-                  }
-                  away_score,
-                  home_team {
-                    id,
-                    name,
-                    code
-                  }
-                  home_score,
-                }
-              }
             }
           }
         `;
@@ -94,7 +72,7 @@ export default {
       },
       variables() {
         return {
-          id: this.userId,
+          userId: this.userId,
         };
       },
       skip() {
@@ -104,67 +82,8 @@ export default {
   },
   computed: {
     ...mapGetters({ userId: 'auth/userId' }),
-    headers() {
-      return [
-        'game_date',
-        'away_team',
-        'score',
-        'home_team',
-        'home_amount',
-        'away_amount',
-        'won_amount',
-      ];
-    },
-    bets() {
-      const bets = this.user.bets.map((bet) => {
-        const data = {
-          id: bet.id,
-          game_date: bet.game.game_date,
-          away_team: bet.game.away_team,
-          score: `${bet.game.home_score} - ${bet.game.away_score}`,
-          home_team: bet.game.home_team,
-          home_amount: bet.home_amount,
-          away_amount: bet.away_amount,
-        };
-        return data;
-      });
-      return bets;
-    },
   },
   methods: {
-    async submit() {
-      const {
-        // eslint-disable-next-line camelcase
-        firstname, lastname, password, confirm_password, display_name,
-      } = this.user;
-      const mutation = `mutation patchUser($id: Int!, $patch: UserPatch!) {
-        patchUser(id: $id, patch: $patch) {
-          id,
-          firstname,
-          lastname,
-          display_name,
-        }
-      }`;
-      try {
-        const response = await this.$apollo.mutate({
-          mutation: gql(mutation),
-          variables: {
-            id: this.userId,
-            patch: {
-              firstname,
-              lastname,
-              password,
-              confirm_password,
-              display_name,
-            },
-          },
-        });
-        this.user = { ...this.user, ...response.data.patchUser };
-      } catch (error) {
-        console.error(error);
-        this.showToast({ message: error.message, variant: 'danger' });
-      }
-    },
   },
 };
 </script>

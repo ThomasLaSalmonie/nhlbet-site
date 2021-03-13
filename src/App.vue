@@ -76,6 +76,7 @@
             <b-avatar />
           </template>
           <b-dropdown-item to="/profil">Profil</b-dropdown-item>
+          <b-dropdown-item to="/groups">Groups</b-dropdown-item>
           <b-dropdown-item @click="handleLogout">Sign Out</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>

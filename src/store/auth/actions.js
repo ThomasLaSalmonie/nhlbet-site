@@ -153,6 +153,7 @@ export default {
         if (shouldShowSnackbar === true) {
           dispatch('ui/showSnackbar', { message: 'dialogs.logout_success', type: 'success' }, { root: true });
         }
+        this.$router.push('/');
         resolve();
       } catch (error) {
         commit('authLogoutError');

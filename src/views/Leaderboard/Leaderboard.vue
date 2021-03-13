@@ -1,87 +1,110 @@
 <template>
-  <b-container fluid>
-    <h1>Leaderboard:</h1>
-    <b-row class="justify-content-md-center">
-      <b-col cols="12" md="auto" v-if="$apolloData.queries.users.loading === false">
-        <b-table small :fields="headers" :items="users">
-          <template #cell(rank)="data">
-            <h2 v-if="data.item.rank === 1">
-              <b-icon icon="award-fill" class="h1" style="color: #EDCE29;"/>
-            </h2>
-            <h3 v-else-if="data.item.rank === 2">
-              <b-icon icon="award-fill" class="h2" style="color: #CBCBCB;"/>
-            </h3>
-            <h4 v-else-if="data.item.rank === 3">
-              <b-icon icon="award-fill" class="h3" style="color: #B47B44;"/>
-            </h4>
-            <div v-else> {{ data.item.rank }} </div>
-          </template>
-          <template #cell(name)="data">
-            <h3 v-if="data.item.id === userId">
-              {{ data.item.name }} (you)
-            </h3>
-            <div v-else>
-              {{ data.item.name }}
-            </div>
-          </template>
-        </b-table>
-      </b-col>
-    </b-row>
-  </b-container>
+  <div>
+    <b-tabs
+      v-if="this.userId > 0"
+      content-class="mt-3"
+      lazy
+      align="center"
+    >
+      <b-tab title="Global leaderboard">
+        <Leaderboard />
+      </b-tab>
+      <b-tab
+        v-for="group in groups"
+        :key="group.id"
+        :title="group.name"
+        :active="$route.hash === `#${group.id}` || $route.hash == `#${group.name.toLowerCase()}`"
+      >
+        <Leaderboard
+          :groupId="group.id"
+        />
+      </b-tab>
+      <!-- <b-tab
+        title="Create new group"
+      >
+        <b-form @submit="onSubmit">
+          <b-row class="justify-content-sm-center">
+            <b-col cols="12" sm="auto">
+              <label>{{ $t('group.name') }}*:</label>
+              <b-form-input v-model="newGroupName" required/>
+              </b-form-checkbox>
+            </b-col>
+          </b-row>
+          <br />
+          <b-button type="submit" variant="primary">{{ $t('group.create') }}</b-button>
+        </b-form>
+      </b-tab> -->
+    </b-tabs>
+    <Leaderboard v-else/>
+  </div>
 </template>
 
 <script>
-/* eslint-disable no-param-reassign */
 import gql from 'graphql-tag';
 import { mapGetters } from 'vuex';
 
+import Leaderboard from '@/components/Leaderboard/Leaderboard.vue';
+
 export default {
-  data() {
-    return {
-    };
+  components: {
+    Leaderboard,
   },
   apollo: {
-    users: {
+    groups: {
       query() {
         const query = `
-          query users {
-            users: users {
+          query groups($userId: Int!) {
+            groups(userId: $userId) {
               id,
               name,
-              points,
-              amount_won,
-              bets_won,
-              bets_lost,
             }
           }
         `;
         return gql(query);
       },
-      result(data) {
-        // eslint-disable-next-line no-plusplus
-        for (let i = 0; i < data.data.users.length; i++) {
-          data.data.users[i].rank = i + 1;
-          if (i > 0 && data.data.users[i].points === data.data.users[i - 1].points) {
-            data.data.users[i].rank = data.data.users[i - 1].rank;
-          }
-        }
+      variables() {
+        return {
+          userId: this.userId,
+        };
       },
+      skip() {
+        return !this.userId;
+      }
     },
+  },
+  data() {
+    return {
+      newGroupName: null,
+    };
   },
   computed: {
     ...mapGetters({ userId: 'auth/userId' }),
-    headers() {
-      return [
-        'rank',
-        'name',
-        'points',
-        'bets_won',
-        'bets_lost',
-        'amount_won',
-      ];
-    },
   },
   methods: {
+    async onSubmit(event) {
+      event.preventDefault();
+      const mutation = `mutation addGroup($item: GroupAdd!) {
+        addGroup(item: $item) {
+          id,
+          name,
+        }
+      }`;
+      try {
+        const response = await this.$apollo.mutate({
+          mutation: gql(mutation),
+          variables: {
+            item: {
+              name: this.newGroupName,
+              admin_id: this.userId,
+            },
+          },
+        });
+        this.user = { ...this.user, ...response.data.addGroup };
+      } catch (error) {
+        console.error(error);
+        this.showToast({ message: error.message, variant: 'danger' });
+      }
+    },
   },
 };
 </script>

@@ -241,6 +241,7 @@ export default {
             id: game.user_bet.id,
             patch: data,
           },
+          refetchQueries: ['messages'],
         });
         if (team === 'home') {
           this.games[index].user_bet.home_amount = amount;

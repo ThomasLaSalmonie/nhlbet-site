@@ -1,5 +1,4 @@
 <template>
-
   <b-container fluid>
     <h1>Register</h1> or <router-link to="/login">sign in</router-link>
     <b-form @submit="onSubmit">
@@ -22,17 +21,15 @@
       <br />
       <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
-    <snackbar />
   </b-container>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import Snackbar from '@/components/Snackbar/Snackbar.vue';
 
 export default {
+  name: 'Register',
   components: {
-    Snackbar,
   },
   data() {
     return {
@@ -65,9 +62,9 @@ export default {
       const { form } = this;
       try {
         await this.register(form);
-        this.$reportSuccess({ message: 'dialogs.register_success' });
+        this.showToast({ message: 'dialogs.register_success', variant: 'success' });
       } catch (e) {
-        this.$reportError({ message: 'errors.register_error' });
+        this.showToast({ message: 'errors.register_error', variant: 'danger' });
       }
     },
   },

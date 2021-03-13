@@ -22,7 +22,6 @@ import { mapState, mapActions } from 'vuex';
 export default {
   name: 'SnackbarContainer',
   data: () => ({
-    onLeaveCallback: null,
   }),
   computed: {
     ...mapState('ui', ['snackbar']),

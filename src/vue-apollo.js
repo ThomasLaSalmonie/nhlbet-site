@@ -3,7 +3,6 @@ import VueApollo from 'vue-apollo';
 import { createApolloClient, restartWebsockets } from 'vue-cli-plugin-apollo/graphql-client';
 import { ApolloLink, concat } from 'apollo-link';
 import { uncrunch } from 'graphql-crunch';
-import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
 // Install the vue plugin
@@ -13,6 +12,7 @@ Vue.use(VueApollo);
 const AUTH_TOKEN = 'apollo-token';
 // Http endpoint
 const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || 'http://localhost:4000/graphql';
+const wsEndpoint = process.env.VUE_APP_GRAPHQL_WS || 'http://localhost:4000/graphql';
 
 const uncruncher = new ApolloLink((operation, forward) => forward(operation)
   .map((response) => {
@@ -40,7 +40,7 @@ const defaultOptions = {
   httpEndpoint,
   // You can use `wss` for secure connection (recommended in production)
   // Use `null` to disable subscriptions
-  // wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || 'ws://localhost:4000/graphql',
+  // wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || 'ws://localhost:3003/graphql',
   wsEndpoint: null,
   // LocalStorage token
   tokenName: AUTH_TOKEN,
